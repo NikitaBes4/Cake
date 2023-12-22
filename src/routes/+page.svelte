@@ -1,43 +1,54 @@
 <script>
-	import { LayerCake, Svg } from 'layercake';
+  import { LayerCake, Svg } from 'layercake';
+  import { scaleBand } from 'd3-scale';
 
-	import Line from './_components/Line.svelte';
-	import Area from './_components/Area.svelte';
-	import AxisX from './_components/AxisX.svelte';
-	import AxisY from './_components/AxisY.svelte';
+  import Bar from './_components/Bar.svelte';
+  import AxisX from './_components/AxisX.svelte';
+  import AxisY from './_components/AxisY.svelte';
 
-	import points from './_data/points.csv';
+  // This example loads csv data as json using @rollup/plugin-dsv
+  import data from '/workspace/Cake/src/routes/_data/groups.csv';
 
-	const xKey = 'myX';
-	const yKey = 'myY';
+  const xKey = 'value';
+  const yKey = 'year';
 
-	points.forEach((/** @type {{ [columnName: string]:  number; }} */ row) => {
-		row[yKey] = +row[yKey];
-	});
+  data.forEach(d => {
+    d[xKey] = +d[xKey];
+  });
 </script>
 
-<div class="chart-container">
-	<LayerCake
-		padding={{ right: 10, bottom: 20, left: 25 }}
-		x={xKey}
-		y={yKey}
-		yDomain={[0, null]}
-		data={points}
-		debug={true}
-	>
-		<Svg>
-			<AxisX />
-			<AxisY />
-			<Line />
-			<Area />
-		</Svg>
-	</LayerCake>
-</div>
-
 <style>
-	.chart-container {
-		width: 80%;
-		height: 80vh;
-		margin: 25px auto;
-	}
+  /*
+    The wrapper div needs to have an explicit width and height in CSS.
+    It can also be a flexbox child or CSS grid element.
+    The point being it needs dimensions since the <LayerCake> element will
+    expand to fill it.
+  */
+  .chart-container {
+    width: 100%;
+    height: 250px;
+  }
 </style>
+
+<div class="chart-container">
+  <LayerCake
+    padding={{ top: 0, bottom: 20, left: 35 }}
+    x={xKey}
+    y={yKey}
+    yScale={scaleBand().paddingInner(0.05)}
+    xDomain={[0, null]}
+    data={data}
+  >
+    <Svg>
+      <AxisX
+        gridlines={true}
+        baseline={true}
+        snapTicks={true}
+      />
+      <AxisY
+        gridlines={false}
+      />
+      <Bar/>
+    </Svg>
+  </LayerCake>
+</div>
